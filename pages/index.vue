@@ -11,8 +11,7 @@
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
 import AccelerometerDisplay from '~/components/AccelerometerDisplay'
-import VideoCapture from "../components/VideoCapture";
-import LocationTracker from "../components/LocationTracker";
+import LocationTracker from "~/components/LocationTracker";
 
 export default {
   components: {
