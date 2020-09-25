@@ -49,8 +49,8 @@ export default {
   },
   methods: {
     addAccelerometerListener() {
-      window.addEventListener("devicemotion", () => {
-        this.updateAcceleration()
+      window.addEventListener("devicemotion", event => {
+        this.updateAcceleration(event)
       }, true);
     },
     updateAcceleration(event) {
