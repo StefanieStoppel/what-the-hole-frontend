@@ -49,18 +49,17 @@ export default {
   },
   methods: {
     addAccelerometerListener() {
-      this.accelerometer.addEventListener('reading', () => {
+      window.addEventListener("devicemotion", () => {
         this.updateAcceleration()
-      });
-      this.accelerometer.start();
+      }, true);
     },
-    updateAcceleration() {
-      this.acceleration.x = this.accelerometer.x;
-      this.acceleration.y = this.accelerometer.y;
-      this.acceleration.z = this.accelerometer.z;
-      console.log("Acceleration along the X-axis " + this.accelerometer.x);
-      console.log("Acceleration along the Y-axis " + this.accelerometer.y);
-      console.log("Acceleration along the Z-axis " + this.accelerometer.z);
+    updateAcceleration(event) {
+      this.acceleration.x = event.acceleration.x;
+      this.acceleration.y = event.acceleration.y;
+      this.acceleration.z = event.acceleration.z;
+      console.log("Acceleration along the X-axis " + this.acceleration.x);
+      console.log("Acceleration along the Y-axis " + this.acceleration.y);
+      console.log("Acceleration along the Z-axis " + this.acceleration.z);
     }
   },
   computed: {
