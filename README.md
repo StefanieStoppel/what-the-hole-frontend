@@ -1,4 +1,4 @@
-# what-the-hole
+# What The Hole ?!? - Frontend
 
 ## Build Setup
 
