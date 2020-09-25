@@ -4,23 +4,22 @@
     <v-row>
       <v-col cols="12">
         <v-row
-          v-if="accelerometerActivated"
           align="center"
           justify="center"
           style="height: 300px;"
         >
           <v-card
-            v-for="(accelerationDirection, index) in accelerationVector"
-            :key="accelerationDirectionLabels[index]"
+            v-for="[axis, accelerationOnAxis] in Object.entries(acceleration)"
+            :key="axis"
             class="ma-3 pa-6"
             outlined
             tile
           >
-            <v-card-title>{{ accelerationDirectionLabels[index]}}</v-card-title>
-            {{ accelerationDirection }} m/s&sup2;
+            <v-card-title>{{ axis }}</v-card-title>
+            {{ accelerationOnAxis }} m/s&sup2;
           </v-card>
         </v-row>
-        <v-row v-else>
+        <v-row>
           <v-card>
             <v-card-title>Sorry, your device does not include an accelerometer! :(</v-card-title>
           </v-card>
@@ -36,12 +35,33 @@ export default {
   data() {
     return {
       accelerationDirectionLabels: ['x', 'y', 'z'],
-      accelerometer: null
+      accelerometer: null,
+      updateFrequency: 5,
+      acceleration: {x: null, y: null, z: null}
     }
   },
   mounted() {
-    this.accelerometer = new window.Accelerometer() || null
-    console.log(this.accelerometer)
+    this.accelerometer = new window.Accelerometer({frequency: this.updateFrequency}) || null;
+    if (!!this.accelerometer && this.accelerometerActivated) {
+      this.addAccelerometerListener();
+      console.log(this.accelerometer);
+    }
+  },
+  methods: {
+    addAccelerometerListener() {
+      this.accelerometer.addEventListener('reading', () => {
+        this.updateAcceleration()
+      });
+      this.accelerometer.start();
+    },
+    updateAcceleration() {
+      this.acceleration.x = this.accelerometer.x;
+      this.acceleration.y = this.accelerometer.y;
+      this.acceleration.z = this.accelerometer.z;
+      console.log("Acceleration along the X-axis " + this.accelerometer.x);
+      console.log("Acceleration along the Y-axis " + this.accelerometer.y);
+      console.log("Acceleration along the Z-axis " + this.accelerometer.z);
+    }
   },
   computed: {
     accelerationVector() {
