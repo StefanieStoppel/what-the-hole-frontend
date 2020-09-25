@@ -34,7 +34,6 @@ export default {
   name: "AccelerometerDisplay",
   data() {
     return {
-      accelerationDirectionLabels: ['x', 'y', 'z'],
       accelerometer: null,
       updateFrequency: 5,
       acceleration: {x: null, y: null, z: null}
@@ -42,10 +41,10 @@ export default {
   },
   mounted() {
     this.accelerometer = new window.Accelerometer({frequency: this.updateFrequency}) || null;
-    if (!!this.accelerometer && this.accelerometerActivated) {
-      this.addAccelerometerListener();
-      console.log(this.accelerometer);
-    }
+    // if (!!this.accelerometer && this.accelerometerActivated) {
+    this.addAccelerometerListener();
+    console.log(this.accelerometer);
+    // }
   },
   methods: {
     addAccelerometerListener() {
