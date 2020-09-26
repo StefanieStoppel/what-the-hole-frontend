@@ -9,11 +9,11 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
-    "@codekraft-studio/vue-record": "0.0.3",
     "core-js": "^3.6.5",
     "gps-to-gpx": "^1.5.1",
     "jszip": "^3.5.0",
-    "nuxt": "^2.14.5"
+    "nuxt": "^2.14.5",
+    "vue-capture": "^0.1.7"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2"
