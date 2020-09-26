@@ -63,7 +63,7 @@ export default {
     start () {
       this.recording = true;
       window.addEventListener("devicemotion", this.addMeasurement, true);
-      this.createFakeEvents();
+      // this.createFakeEvents();
       console.log("Starting acceleration measurements...")
     },
     stop () {
