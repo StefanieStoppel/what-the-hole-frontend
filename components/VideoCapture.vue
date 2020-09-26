@@ -59,8 +59,8 @@ export default {
     onResult() {
       const videoBlob = this.$refs.videoRecorder.media.blob;
       console.log('The videoBlob:', videoBlob);
-      this.$emit('video-result', videoBlob);
       this.$refs.videoRecorder.reset()
+      this.$emit('video-result', videoBlob);
     }
   }
 }
