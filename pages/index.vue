@@ -1,14 +1,16 @@
 <template>
   <v-container>
     <v-row justify="center" align="center">
-      <v-col sm="6">
-        <v-btn v-if="!running" @click="start">Start</v-btn>
-        <v-btn v-else @click="stop">Stop</v-btn>
+      <v-col sm="12">
+        <v-btn v-if="!running" @click="start" min-width="80vw" x-large>Start</v-btn>
+        <v-btn v-else @click="stop" min-width="80vw" x-large>Stop</v-btn>
       </v-col>
-      <v-col sm="6">
+      <v-col sm="12">
         <v-btn v-if="!!zipUrl"
                :href="zipUrl"
                :download="zipFileName"
+               min-width="80vw"
+               x-large
         >Download
         </v-btn>
       </v-col>
