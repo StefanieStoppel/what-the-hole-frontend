@@ -12,6 +12,7 @@
     "@codekraft-studio/vue-record": "0.0.3",
     "core-js": "^3.6.5",
     "gps-to-gpx": "^1.5.1",
+    "jszip": "^3.5.0",
     "nuxt": "^2.14.5"
   },
   "devDependencies": {

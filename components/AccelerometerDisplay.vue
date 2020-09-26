@@ -3,10 +3,6 @@
     <h2 class="text-center">Acceleration</h2>
     <v-row >
       <v-col cols="12">
-        <v-btn v-if="!isMeasuring" @click="startMeasurement">Start</v-btn>
-        <v-btn v-else @click="stopMeasurement">Stop</v-btn>
-      </v-col>
-      <v-col cols="12">
         <v-row
           align="center"
           justify="center"
@@ -72,17 +68,19 @@ export default {
       // if (!!this.accelerometer && this.accelerometerActivated) {
       //}
     },
-    startMeasurement () {
+    start () {
       window.addEventListener("devicemotion", this.addMeasurement, true);
       this.createFakeEvents();
       this.isMeasuring = true;
       console.log("Starting acceleration measurements...")
     },
-    stopMeasurement() {
+    stop () {
       this.isMeasuring = false;
       window.removeEventListener('devicemotion', this.addMeasurement, true)
       console.log("Stopping acceleration measurments...")
-      console.log(this.accelerationMeasurements)
+      const accJSON = JSON.stringify(this.accelerationMeasurements)
+      const accelerationBlob = new Blob([accJSON], {type: 'application/json'});
+      this.$emit('accelerometer-result', accelerationBlob)
     },
     addMeasurement(event) {
       const acc = event.acceleration;
@@ -96,7 +94,7 @@ export default {
       setInterval(() => {
         const deviceMotionEvent = new DeviceMotionEvent("devicemotion",{
           acceleration: {x: Math.random(), y: Math.random(), z: Math.random()}
-        })
+        });
         window.dispatchEvent(deviceMotionEvent)
       }, 200)
 

@@ -1,22 +1,15 @@
 <template>
   <v-container fluid>
     <h2 class="text-center">Location Tracking</h2>
-    <v-row>
-      <v-col cols="6">
-        <v-btn v-if="locationAvailable && !isWatchingLocation" @click="startWatchingPosition">Start</v-btn>
-        <v-btn v-else-if="locationAvailable && isWatchingLocation" @click="stopWatchingPosition">Stop</v-btn>
-      </v-col>
-      <v-col cols="6">
-        <v-btn v-if="!!xmlBlobUrl"
-               :href="xmlBlobUrl"
-               :download="'test.gpx'"
-        >Download GPX</v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
+    <v-row v-if="locationAvailable">
       <v-col cols="12">
         Current location: {{this.currentGpxCoordinate.latitude}}, {{this.currentGpxCoordinate.longitude}},
         Timestamp: {{this.currentGpxCoordinate.time}}
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="12">
+        {{infoText}}
       </v-col>
     </v-row>
   </v-container>
@@ -52,7 +45,6 @@ export default {
         endTime: null,
         waypoints: []
       },
-      xmlBlobUrl: null
     }
   },
   mounted() {
@@ -67,20 +59,26 @@ export default {
     getCurrentISOTimestamp() {
       return new Date().toISOString();
     },
-    startWatchingPosition() {
-      this.infoText = 'Locating…';
-      this.isWatchingLocation = true;
-      this.locationWatcherId = navigator.geolocation.watchPosition(this.success, this.error);
-      this.gpxData.startTime = this.getCurrentISOTimestamp();
-      console.log("Started watcher")
+    start() {
+      if (this.locationAvailable) {
+        this.isWatchingLocation = true;
+        this.locationWatcherId = navigator.geolocation.watchPosition(this.success, this.error);
+        this.gpxData.startTime = this.getCurrentISOTimestamp();
+        console.log("Started watcher")
+      } else {
+        throw new Error("Location not available")
+      }
     },
-    stopWatchingPosition() {
-      this.infoText = 'Done';
-      this.isWatchingLocation = false;
-      navigator.geolocation.clearWatch(this.locationWatcherId);
-      console.log("Stopped watcher")
-      this.gpxData.endTime = this.getCurrentISOTimestamp();
-      this.createGpxFile();
+    stop() {
+      if (this.locationAvailable) {
+        this.isWatchingLocation = false;
+        navigator.geolocation.clearWatch(this.locationWatcherId);
+        console.log("Stopped watcher")
+        this.gpxData.endTime = this.getCurrentISOTimestamp();
+        this.$emit('location-result', this.createGpxFile())
+      } else {
+        throw new Error("Location not available")
+      }
     },
     success(position) {
       this.addTimestampedGPXCoordinateToWaypoints(position);
@@ -94,20 +92,14 @@ export default {
       const gpxCoordinate =
         new GPXCoordinate(coords.latitude, coords.longitude, timestampISO);
       this.gpxData.waypoints.push(gpxCoordinate);
-      this.updateCurrentGPXCoordinate(gpxCoordinate)
-      console.log('Adding new coordinate to waypoints...')
-    },
-    updateCurrentGPXCoordinate(gpxCoordinate) {
       this.currentGpxCoordinate = gpxCoordinate
+      console.log('Adding new coordinate to waypoints...')
     },
     createGpxFile() {
       console.log(this.gpxData)
       const gpx = createGpx(this.gpxData.waypoints, {startTime: this.gpxData.startTime});
-      // console.log(gpx)
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(gpx, "text/xml");
       const xmlBlob = new Blob([gpx], {type: 'text/xml'});
-      this.xmlBlobUrl = URL.createObjectURL(xmlBlob);
+      return URL.createObjectURL(xmlBlob);
     }
   }
 }
