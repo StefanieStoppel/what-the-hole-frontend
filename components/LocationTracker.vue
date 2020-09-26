@@ -98,8 +98,7 @@ export default {
     createGpxFile() {
       console.log(this.gpxData)
       const gpx = createGpx(this.gpxData.waypoints, {startTime: this.gpxData.startTime});
-      const xmlBlob = new Blob([gpx], {type: 'text/xml'});
-      return URL.createObjectURL(xmlBlob);
+      return new Blob([gpx], {type: 'text/xml'});
     }
   }
 }
