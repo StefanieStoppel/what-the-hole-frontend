@@ -1,24 +1,16 @@
 <template>
   <v-container fluid>
-    <h2 class="text-center">Acceleration</h2>
+    <h2>Acceleration</h2>
+    <v-row>
+      <v-col sm="12" md="6">
+        <strong>Status:</strong> {{recording ? 'recording' : '-'}}
+      </v-col>
+    </v-row>
     <v-row >
-      <v-col cols="12">
-        <v-row
-          align="center"
-          justify="center"
-          style="height: 300px;"
-        >
-          <v-card
-            v-for="[axis, accelerationOnAxis] in Object.entries(currentAcceleration.getAccelerationDisplay())"
-            :key="axis"
-            class="ma-3 pa-6"
-            outlined
-            tile
-          >
-            <v-card-title>{{ axis }}</v-card-title>
-            {{ accelerationOnAxis }} m/s&sup2;
-          </v-card>
-        </v-row>
+      <v-col sm="12" md="4"
+             v-for="[axis, accelerationOnAxis] in Object.entries(currentAcceleration.getAccelerationDisplay())"
+             :key="axis">
+            {{ axis }}: {{ accelerationOnAxis }} m/s&sup2;
       </v-col>
     </v-row>
     <v-row>
@@ -51,7 +43,7 @@ export default {
   name: "AccelerometerDisplay",
   data() {
     return {
-      isMeasuring: false,
+      recording: false,
       accelerometer: null,
       measurementFrequency: 5,
       currentAcceleration: new TimestampedAcceleration(null, null, null,null),
@@ -69,13 +61,13 @@ export default {
       //}
     },
     start () {
+      this.recording = true;
       window.addEventListener("devicemotion", this.addMeasurement, true);
       this.createFakeEvents();
-      this.isMeasuring = true;
       console.log("Starting acceleration measurements...")
     },
     stop () {
-      this.isMeasuring = false;
+      this.recording = false;
       window.removeEventListener('devicemotion', this.addMeasurement, true)
       console.log("Stopping acceleration measurments...")
       const accJSON = JSON.stringify(this.accelerationMeasurements)

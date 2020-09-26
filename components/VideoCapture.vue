@@ -1,7 +1,12 @@
 <template>
   <v-container fluid>
-    <h2 class="text-center">Video recording</h2>
+    <h2>Video</h2>
     <v-row>
+      <v-col sm="12" md="6">
+        <strong>Status:</strong> {{recording ? 'recording' : '-'}}
+      </v-col>
+    </v-row>
+    <v-row v-show="false">
       <v-col cols="6">
         <camera ref="videoRecorder"
                 :requestAccess="true"
@@ -29,6 +34,7 @@ export default {
   },
   data () {
     return {
+      recording: false,
       constraints: {
         audio: false,
         video: {
@@ -41,10 +47,12 @@ export default {
   },
   methods: {
     start () {
+      this.recording = true;
       console.log("Video started");
       this.$refs.videoRecorder.record()
     },
     stop () {
+      this.recording = false;
       console.log("Video stopped");
       this.$refs.videoRecorder.stop()
     },

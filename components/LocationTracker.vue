@@ -1,10 +1,13 @@
 <template>
   <v-container fluid>
-    <h2 class="text-center">Location Tracking</h2>
+    <h2>Location</h2>
     <v-row v-if="locationAvailable">
-      <v-col cols="12">
-        Current location: {{this.currentGpxCoordinate.latitude}}, {{this.currentGpxCoordinate.longitude}},
-        Timestamp: {{this.currentGpxCoordinate.time}}
+      <v-col sm="12" md="6">
+        <strong>Status:</strong> {{recording ? 'recording' : '-'}}
+      </v-col>
+      <v-col sm="12" md="6">
+        <strong>Current location:</strong> {{this.currentGpxCoordinate.latitude}}, {{this.currentGpxCoordinate.longitude}}
+        at {{this.currentGpxCoordinate.time}}
       </v-col>
     </v-row>
     <v-row v-else>
@@ -31,7 +34,7 @@ export default {
   data() {
     return {
       locationAvailable: false,
-      isWatchingLocation: false,
+      recording: false,
       infoText: '',
       locationWatcherOptions: {
         enableHighAccuracy: false,
@@ -61,7 +64,7 @@ export default {
     },
     start() {
       if (this.locationAvailable) {
-        this.isWatchingLocation = true;
+        this.recording = true;
         this.locationWatcherId = navigator.geolocation.watchPosition(this.success, this.error);
         this.gpxData.startTime = this.getCurrentISOTimestamp();
         console.log("Started watcher")
@@ -71,7 +74,7 @@ export default {
     },
     stop() {
       if (this.locationAvailable) {
-        this.isWatchingLocation = false;
+        this.recording = false;
         navigator.geolocation.clearWatch(this.locationWatcherId);
         console.log("Stopped watcher")
         this.gpxData.endTime = this.getCurrentISOTimestamp();
