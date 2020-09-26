@@ -1,7 +1,11 @@
 <template>
   <v-container fluid>
     <h2 class="text-center">Acceleration</h2>
-    <v-row>
+    <v-row >
+      <v-col cols="12">
+        <v-btn v-if="!isMeasuring" @click="startMeasurement">Start</v-btn>
+        <v-btn v-else @click="stopMeasurement">Stop</v-btn>
+      </v-col>
       <v-col cols="12">
         <v-row
           align="center"
@@ -9,7 +13,7 @@
           style="height: 300px;"
         >
           <v-card
-            v-for="[axis, accelerationOnAxis] in Object.entries(acceleration)"
+            v-for="[axis, accelerationOnAxis] in Object.entries(currentAcceleration.getAccelerationDisplay())"
             :key="axis"
             class="ma-3 pa-6"
             outlined
@@ -19,52 +23,86 @@
             {{ accelerationOnAxis }} m/s&sup2;
           </v-card>
         </v-row>
-        <v-row>
-          <v-card>
-            <v-card-title>Sorry, your device does not include an accelerometer! :(</v-card-title>
-          </v-card>
-        </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>Sorry, your device does not include an accelerometer! :(</v-card-title>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+class TimestampedAcceleration {
+  constructor(x, y, z, time) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.time = time;
+  }
+  getAccelerationDisplay() {
+    return {x: this.x, y: this.y, z: this.z}
+  }
+  toJSONObject() {
+    return {...this.getAccelerationDisplay(), time: this.time}
+  }
+}
+
 export default {
   name: "AccelerometerDisplay",
   data() {
     return {
+      isMeasuring: false,
       accelerometer: null,
-      updateFrequency: 5,
-      acceleration: {x: null, y: null, z: null}
+      measurementFrequency: 5,
+      currentAcceleration: new TimestampedAcceleration(null, null, null,null),
+      accelerationMeasurements: [],
+      measurementCounter: 0
     }
   },
   mounted() {
-    this.accelerometer = new window.Accelerometer({frequency: this.updateFrequency}) || null;
-    // if (!!this.accelerometer && this.accelerometerActivated) {
-    this.addAccelerometerListener();
-    console.log(this.accelerometer);
-    // }
+    this.initAccelerometer()
   },
   methods: {
-    addAccelerometerListener() {
-      window.addEventListener("devicemotion", event => {
-        this.updateAcceleration(event)
-      }, true);
+    initAccelerometer() {
+      this.accelerometer = new window.Accelerometer({frequency: this.measurementFrequency}) || null;
+      // if (!!this.accelerometer && this.accelerometerActivated) {
+      //}
     },
-    updateAcceleration(event) {
-      this.acceleration.x = event.acceleration.x;
-      this.acceleration.y = event.acceleration.y;
-      this.acceleration.z = event.acceleration.z;
-      console.log("Acceleration along the X-axis " + this.acceleration.x);
-      console.log("Acceleration along the Y-axis " + this.acceleration.y);
-      console.log("Acceleration along the Z-axis " + this.acceleration.z);
+    startMeasurement () {
+      window.addEventListener("devicemotion", this.addMeasurement, true);
+      this.createFakeEvents();
+      this.isMeasuring = true;
+      console.log("Starting acceleration measurements...")
+    },
+    stopMeasurement() {
+      this.isMeasuring = false;
+      window.removeEventListener('devicemotion', this.addMeasurement, true)
+      console.log("Stopping acceleration measurments...")
+      console.log(this.accelerationMeasurements)
+    },
+    addMeasurement(event) {
+      const acc = event.acceleration;
+      this.currentAcceleration = new TimestampedAcceleration(acc.x, acc.y, acc.z, this.getCurrentISOTimestamp());
+      this.accelerationMeasurements.push(this.currentAcceleration.toJSONObject());
+    },
+    getCurrentISOTimestamp() {
+      return new Date().toISOString();
+    },
+    createFakeEvents() {
+      setInterval(() => {
+        const deviceMotionEvent = new DeviceMotionEvent("devicemotion",{
+          acceleration: {x: Math.random(), y: Math.random(), z: Math.random()}
+        })
+        window.dispatchEvent(deviceMotionEvent)
+      }, 200)
+
     }
   },
   computed: {
-    accelerationVector() {
-      return this.accelerometer ? [this.accelerometer.x, this.accelerometer.y, this.accelerometer.z] : []
-    },
     accelerometerActivated() {
       return this.accelerometer ? this.accelerometer.activated : false
     }
