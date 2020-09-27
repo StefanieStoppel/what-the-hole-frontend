@@ -49,12 +49,12 @@ export default {
     start () {
       this.recording = true;
       console.log("Video started");
-      this.$refs.videoRecorder.record()
+      // this.$refs.videoRecorder.record()
     },
     stop () {
       this.recording = false;
       console.log("Video stopped");
-      this.$refs.videoRecorder.stop()
+      // this.$refs.videoRecorder.stop()
     },
     onResult() {
       const videoBlob = this.$refs.videoRecorder.media.blob;
