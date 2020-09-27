@@ -13,7 +13,7 @@
             {{ axis }}: {{ accelerationOnAxis }} m/s&sup2;
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-show="false">
       <v-col cols="12">
         <v-card>
           <v-card-title>Sorry, your device does not include an accelerometer! :(</v-card-title>
